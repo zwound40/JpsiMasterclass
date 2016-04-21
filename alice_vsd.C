@@ -16,7 +16,6 @@
 #include <TGComboBox.h>
 #include <TGTextView.h>
 
-#include <TGLOverlayButton.h>
 #include <TGPicture.h>
 
 #include <TG3DLine.h>
@@ -38,7 +37,6 @@
 
 #include <TEveSelection.h>
 
-#include <TGLEmbeddedViewer.h>
 #include <TCanvas.h>
 #include <TParticlePDG.h>
 
@@ -62,7 +60,6 @@
 #include <TPRegexp.h>
 
 #include <TGNumberEntry.h>
-#include <TGLWidget.h>
 
 #include "MultiView.C"
 
@@ -657,10 +654,6 @@ public:
 
   TEveTrackList *fTrackList;
 
-  TGLOverlayButton *obutton1;
-  TGLOverlayButton *obutton2;
-  TGLOverlayButton *obutton3;
-  TGLOverlayButton *overlayButton;
 
   TGLabel *LoopNumber;
   TGNumberEntryField *fNLoop;
@@ -675,8 +668,7 @@ public:
     
     fLoadTracks(kFALSE),
     fGeometrySet(kTRUE), fApplyTrackCuts(kFALSE),
-    fTrackList(0),
-    obutton1(0), obutton2(0), obutton3(0), overlayButton(0)
+    fTrackList(0)
 
   {
     fFile = TFile::Open(file_name);
@@ -702,22 +694,6 @@ public:
     }
 
     fVSD = new TEveVSD;
-
-    if(gMultiView) {
-      Int_t height = gMultiView->Get3DView()->GetEveFrame()->GetHeight();
-      obutton1 = new TGLOverlayButton(gMultiView->Get3DView()->GetGLViewer(),  "use ROLLER to zoom in/out", 0, height-20, 250, 20);
-      obutton2 = new TGLOverlayButton(gMultiView->Get3DView()->GetGLViewer(),  "click LEFT button to rotate", 0, height-40, 250, 20);
-      obutton3 = new TGLOverlayButton(gMultiView->Get3DView()->GetGLViewer(),  "press ROLLER to move", 0, height-60, 250, 20);
-    } 
-    else {
-      obutton1 = new TGLOverlayButton(gMultiView->Get3DView()->GetGLViewer(),  "use ROLLER to zoom in/out", 0, 0, 250, 20);
-      obutton2 = new TGLOverlayButton(gMultiView->Get3DView()->GetGLViewer(),  "click LEFT button to rotate", 0, 0, 250, 20);
-      obutton3 = new TGLOverlayButton(gMultiView->Get3DView()->GetGLViewer(),  "press ROLLER to move", 0, 0, 250, 20);
-    }
-
-    obutton1->SetAlphaValues(0.05, 0.8);
-    obutton2->SetAlphaValues(0.05, 0.8);
-    obutton3->SetAlphaValues(0.05, 0.8);
   }
 
   virtual ~TVSDReader()
@@ -1361,18 +1337,8 @@ For your task you have several tools at hand, which can be found on the left sid
     }
 
     else{
-      if(overlayButton && gMultiView){
-        gMultiView->Get3DView()->GetGLViewer()->RemoveOverlayElement((TGLOverlayElement *)overlayButton);
-      }
       
-      if(gMultiView) {
-        obutton1->SetPosition(0, gMultiView->Get3DView()->GetEveFrame()->GetHeight()-25);
-        obutton2->SetPosition(0, gMultiView->Get3DView()->GetEveFrame()->GetHeight()-45);
-        obutton3->SetPosition(0, gMultiView->Get3DView()->GetEveFrame()->GetHeight()-65);
-      }
-
       TEveElement *top = gEve->GetCurrentEvent();
-
       if(gMultiView) {
         gMultiView->DestroyEventRPhi();
         gMultiView->ImportEventRPhi(top);
@@ -1536,7 +1502,10 @@ void LoadTracksFromTree(Int_t maxR)
 
         
 // Fill arrays for invariant mass calculation        
-        Float_t e = TMath::Sqrt( pSquared + (0.00051*0.00051));
+        
+// if energy loss below threshold, assume particle is a pion, otherwise assume it is an electron        
+        Float_t massSquared = dedx>62 ? 0. : 0.019;
+        Float_t e = TMath::Sqrt( pSquared + massSquared );
         if(charge > 0) {
           po[nPositrons][0] = e;
           po[nPositrons][1] = px;
@@ -1888,38 +1857,36 @@ void alice_vsd( Int_t dataset) {
   
   gJpsiHist = new TH1F("Statistics Jpsi","Difference: EP - (EE + PP) ",60,0.,6);
   gJpsiHist->SetLineColor(6);
+  gJpsiHist->SetMarkerColor(6);
   gJpsiHist->GetXaxis()->SetTitle("m_{ee} (GeV/c^{2})");
   gJpsiHist->GetYaxis()->SetTitle("Counts");
   gJpsiHist->Sumw2();
 
   gMinvHist = new TH1F("Statistics e^{+} e^{-}","Invariant Mass Distribution: Electrons + Positrons",60,0.,6);
   gMinvHist->SetLineColor(2);
+  gMinvHist->SetMarkerColor(2);
   gMinvHist->GetXaxis()->SetTitle("m_{ee} (GeV/c^{2})");
   gMinvHist->GetYaxis()->SetTitle("Counts");
   gMinvHist->Sumw2();
 
   geeHist = new TH1F("Statistics e^{-} e^{-}","Invariant Mass Distribution: Electrons + Electrons",60,0.,6);
   geeHist->SetLineColor(4);
+  geeHist->SetMarkerColor(4);
   geeHist->GetXaxis()->SetTitle("m_{ee} (GeV/c^{2})");
   geeHist->GetYaxis()->SetTitle("Counts");
   geeHist->Sumw2();
 
   gppHist = new TH1F("Statistics e^{+} e^{+}","Invariant Mass Distribution: Positrons + Positrons",60,0.,6);
   gppHist->SetLineColor(416);
+  gppHist->SetMarkerColor(416);
   gppHist->GetXaxis()->SetTitle("m_{ee} (GeV/c^{2})");
   gppHist->GetYaxis()->SetTitle("Counts");
   gppHist->Sumw2();
 
   geHist = new TH1F("copy e^{-} e^{-}","e^{-} e^{-} Distribution",60,0.,6);
-  geHist->SetLineColor(4);
-  geHist->GetXaxis()->SetTitle("m_{ee} (GeV/c^{2})");
-  geHist->GetYaxis()->SetTitle("Counts");
   geHist->Sumw2();
 
   gpHist = new TH1F("copy e^{+} e^{+}","e^{+} e^{+} Distribution",60,0.,6);
-  gpHist->SetLineColor(4);
-  gpHist->GetXaxis()->SetTitle("m_{ee} (GeV/c^{2})");
-  gpHist->GetYaxis()->SetTitle("Counts");
   gpHist->Sumw2();
 
   
@@ -1927,18 +1894,21 @@ void alice_vsd( Int_t dataset) {
   Int_t nbinsY = 120;
   Float_t  *binLimitsX = new Float_t[nbinsX+1];
   Float_t  *binLimitsY = new Float_t[nbinsX+1];
-  Float_t first=0.4;
-  Float_t last=10.;
-  Float_t expMax=TMath::Log(last/first);
+  Float_t firstX = 0.1;
+  Float_t lastX = 20.;
+  Float_t firstY = 20.;
+  Float_t lastY = 140.;
+  Float_t expMax=TMath::Log(lastX/firstX);
   for (Int_t i=0; i<nbinsX+1; ++i){
-    binLimitsX[i]=first*TMath::Exp(expMax/nbinsX*(Float_t)i);
+    binLimitsX[i]=firstX*TMath::Exp(expMax/nbinsX*(Float_t)i);
   }
   for (Int_t i=0; i<nbinsY+1; ++i){
-    binLimitsY[i] = i; 
+    binLimitsY[i] = firstY + i * (lastY - firstY)/nbinsY; 
   }
   
   gEnergyLoss = new TH2F("Specific Energy Loss","Specific Energy Loss",nbinsX, binLimitsX,nbinsY, binLimitsY );
   gEnergyLoss->GetXaxis()->SetTitle("momentum (GeV/c)");
+  gEnergyLoss->GetXaxis()->SetTitleOffset(1.5);
   gEnergyLoss->GetYaxis()->SetTitle("dE/dx in TPC (arb. units)");
   gEnergyLoss->SetStats(0);
 
