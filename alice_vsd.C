@@ -314,27 +314,27 @@ public:
   void SetLineValue1() {
 
     l1->SetX1(p1);
-    l1->SetY1(0);
+    l1->SetY1(de1);
     l1->SetX2(p1);
     l1->SetY2(de2);
     l1->SetLineColor(2);
     l1->SetLineStyle(5);
 
     l2->SetX1(p2);
-    l2->SetY1(0);
+    l2->SetY1(de1);
     l2->SetX2(p2);
     l2->SetY2(de2);
     l2->SetLineColor(2);
     l2->SetLineStyle(5);
 
-    l3->SetX1(0);
+    l3->SetX1(p1);
     l3->SetY1(de1);
     l3->SetX2(p2);
     l3->SetY2(de1);
     l3->SetLineColor(2);
     l3->SetLineStyle(5);
 
-    l4->SetX1(0);
+    l4->SetX1(p1);
     l4->SetY1(de2);
     l4->SetX2(p2);
     l4->SetY2(de2);
@@ -512,7 +512,7 @@ public:
       - the signal S by integrating the counts in the \"Unlike - Like Sign Mass Distribution\" \n\
       - the background B by integrating the counts in the \"Like Sign Mass Distribution\" \n\
       - the signal over background ratio S/B\n\
-      - the significane, defined as S/(S+B)\n\
+      - the significance, defined as S/sqrt(S+B)\n\
      It will also store your current values for the track cuts and the in variant mass window\n\
      together with the obtained signal, S/B and significance in a file called  \"masterclass.save\".");
 
