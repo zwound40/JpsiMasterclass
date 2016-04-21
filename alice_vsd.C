@@ -67,61 +67,47 @@ using namespace std;
 
 
 class TVSDReader;
-MultiView *gMultiView = 0;
 
 
-
-
-Bool_t gEnableQuickAnalysis = kFALSE;  
-
-TH1F *gMinvHist = 0;
-TH1F *geeHist = 0;
-TH1F *gppHist = 0;
-TH1F *geHist = 0;
-TH1F *gpHist = 0;
-TH1F *gJpsiHist = 0;
-TH2F *gEnergyLoss = 0;
-
-Float_t gArrP[300] = {0};
-Float_t gArrdEdx[300] = {0};
-Float_t el[100][4];
-Float_t po[100][4];
-Int_t nPositrons = 0;
-Int_t nElectrons = 0;
-Int_t nSelectedTracks  = 0;
-Int_t nEvents = 0;
-
-
-
-
-TCanvas *pad2 = 0;
-TCanvas *pad = 0;
-
-
-TGCheckButton *gCheckboxLoadTracks = 0;
-TGCheckButton *gCheckboxApplyTrackCuts = 0;
-TGCheckButton *gCheckboxQuickAnalysis= 0;
-
-TGTextButton *gButtonLoadTracks = 0;
-TGTextButton *gButtonFillPidHistos = 0;
-TGTextButton *gButtonDefineTrackCuts = 0;
-TGTextButton *gButtonApplayTrackCuts = 0;
-TGTextButton *gButtonFillInvMass = 0;
-TGTextButton *gButtonJumpEvents = 0;
-
-TGLabel *gLabelEventNumber = 0;
-
-Int_t globalDataset = 0;
-
-
-Float_t p1,p2,de1,de2;
-
-TLine *l1 = 0;
-TLine *l2 = 0;
-TLine *l3 = 0;
-TLine *l4 = 0;
-TLine *l5 = 0;
-TLine *l6 = 0;
+void DefineGlobalVariables(){}
+  
+  MultiView *gMultiView = 0;
+  Bool_t gEnableQuickAnalysis = kFALSE;
+  TH1F *gMinvHist = 0;
+  TH1F *geeHist = 0;
+  TH1F *gppHist = 0;
+  TH1F *geHist = 0;
+  TH1F *gpHist = 0;
+  TH1F *gJpsiHist = 0;
+  TH2F *gEnergyLoss = 0;
+  Float_t gArrP[300] = {0};
+  Float_t gArrdEdx[300] = {0};
+  Float_t el[100][4];
+  Float_t po[100][4];
+  Int_t nPositrons = 0;
+  Int_t nElectrons = 0;
+  Int_t nSelectedTracks = 0;
+  Int_t nEvents = 0;
+  TCanvas *pad2 = 0;
+  TCanvas *pad = 0;
+  TGCheckButton *gCheckboxLoadTracks = 0;
+  TGCheckButton *gCheckboxApplyTrackCuts = 0;
+  TGCheckButton *gCheckboxQuickAnalysis= 0;
+  TGTextButton *gButtonLoadTracks = 0;
+  TGTextButton *gButtonFillPidHistos = 0;
+  TGTextButton *gButtonDefineTrackCuts = 0;
+  TGTextButton *gButtonApplayTrackCuts = 0;
+  TGTextButton *gButtonFillInvMass = 0;
+  TGTextButton *gButtonJumpEvents = 0;
+  TGLabel *gLabelEventNumber = 0;
+  Int_t globalDataset = 0;
+  Float_t p1,p2,de1,de2;
+  TLine *l1 = 0;
+  TLine *l2 = 0;
+  TLine *l3 = 0;
+  TLine *l4 = 0;
+  TLine *l5 = 0;
+  TLine *l6 = 0;
 
 
 //______________________________________________________________________________
@@ -1155,61 +1141,65 @@ For your task you have several tools at hand, which can be found on the left sid
     lvl1->SetRnrSelf(kFALSE);
     TEveElement::List_i j = lvl1->BeginChildren();
 
-    TEveGeoShape *trd1 = (TEveGeoShape *) *j;
-    trd1->SetRnrSelf(kTRUE);
-    trd1->SetMainTransparency(80);
-    j++;
+      TEveGeoShape *trd1 = (TEveGeoShape *) *++j;
+  trd1->SetRnrSelf(kTRUE);
+  trd1->SetMainTransparency(80);
 
-    trd1 = (TEveGeoShape *) *j;
-    trd1->SetRnrSelf(kTRUE);
-    trd1->SetMainTransparency(80);
-    j++;
+  trd1 = (TEveGeoShape *) *++j;
+  trd1->SetRnrSelf(kTRUE);
+  trd1->SetMainTransparency(80);
+  trd1 = (TEveGeoShape *) *++j;
+  trd1->SetRnrSelf(kTRUE);
+  trd1->SetMainTransparency(80);
+  trd1 = (TEveGeoShape *) *++j;
+  trd1->SetRnrSelf(kTRUE);
+  trd1->SetMainTransparency(80);
+  trd1 = (TEveGeoShape *) *++j;
+  trd1->SetRnrSelf(kTRUE);
+  trd1->SetMainTransparency(80);
+  trd1 = (TEveGeoShape *) *++j;
+  trd1->SetRnrSelf(kTRUE);
+  trd1->SetMainTransparency(80);
+  trd1 = (TEveGeoShape *) *++j;
+  trd1->SetRnrSelf(kTRUE);
+  trd1->SetMainTransparency(80);
+  trd1 = (TEveGeoShape *) *++j;
+  trd1->SetRnrSelf(kTRUE);
+  trd1->SetMainTransparency(80);
+  trd1 = (TEveGeoShape *) *++j;
+  trd1->SetRnrSelf(kTRUE);
+  trd1->SetMainTransparency(80);
+  trd1 = (TEveGeoShape *) *++j;
+  trd1->SetRnrSelf(kTRUE);
+  trd1->SetMainTransparency(80);
+  trd1 = (TEveGeoShape *) *++j;
+  trd1->SetRnrSelf(kTRUE);
+  trd1->SetMainTransparency(80);
+  trd1 = (TEveGeoShape *) *++j;
+  trd1->SetRnrSelf(kTRUE);
+  trd1->SetMainTransparency(80);
+  trd1 = (TEveGeoShape *) *++j;
+  trd1->SetRnrSelf(kTRUE);
+  trd1->SetMainTransparency(80);
+  trd1 = (TEveGeoShape *) *++j;
+  trd1->SetRnrSelf(kTRUE);
+  trd1->SetMainTransparency(80);
+  trd1 = (TEveGeoShape *) *++j;
+  trd1->SetRnrSelf(kTRUE);
+  trd1->SetMainTransparency(80);
+  trd1 = (TEveGeoShape *) *++j;
+  trd1->SetRnrSelf(kTRUE);
+  trd1->SetMainTransparency(80);
+  trd1 = (TEveGeoShape *) *++j;
+  trd1->SetRnrSelf(kTRUE);
+  trd1->SetMainTransparency(80);
+  trd1 = (TEveGeoShape *) *++j;
+  trd1->SetRnrSelf(kTRUE);
+  trd1->SetMainTransparency(80);
+  trd1 = (TEveGeoShape *) *++j;
+  trd1->SetRnrSelf(kTRUE);
+  trd1->SetMainTransparency(80);
 
-    j++;
-    j++;
-    j++;
-    j++;
-
-    trd1 = (TEveGeoShape *) *j;
-    trd1->SetRnrSelf(kTRUE);
-    trd1->SetMainTransparency(80);
-    j++;
-
-    trd1 = (TEveGeoShape *) *j;
-    trd1->SetRnrSelf(kTRUE);
-    trd1->SetMainTransparency(80);
-    j++;
-
-    trd1 = (TEveGeoShape *) *j;
-    trd1->SetRnrSelf(kTRUE);
-    trd1->SetMainTransparency(80);
-    j++;
-
-    j++;
-    j++;
-    j++;
-    j++;
-    j++;
-
-    trd1 = (TEveGeoShape *) *j;
-    trd1->SetRnrSelf(kTRUE);
-    trd1->SetMainTransparency(80);
-    j++;
-
-    trd1 = (TEveGeoShape *) *j;
-    trd1->SetRnrSelf(kTRUE);
-    trd1->SetMainTransparency(80);
-    j++;
-
-    trd1 = (TEveGeoShape *) *j;
-    trd1->SetRnrSelf(kTRUE);
-    trd1->SetMainTransparency(80);
-    j++;
-
-    trd1 = (TEveGeoShape *) *j;
-    trd1->SetRnrSelf(kTRUE);
-    trd1->SetMainTransparency(80);
-    j++;
 
     gEve->AddGlobalElement(gentle_geom);
 
@@ -1698,6 +1688,7 @@ TVSDReader *gVSDReader = 0;
 //______________________________________________________________________________
 void alice_vsd( Int_t dataset) {
 
+  DefineGlobalVariables();
   TString vsd_file_name;
   
   l1 = new TLine(p1,p1,0,de2);
@@ -1726,101 +1717,12 @@ void alice_vsd( Int_t dataset) {
   TEveVSD::DisableTObjectStreamersForVSDStruct();
 
   TEveManager::Create(kTRUE,"FV");
-
-  TEveGeoShape *gentle_geom = 0;
-
-  TFile *geom = TFile::Open("alice_mini_geom.root");
-  if (!geom) return;
-  TEveGeoShapeExtract *gse = (TEveGeoShapeExtract *) geom->Get("Gentle");
-  gentle_geom = TEveGeoShape::ImportShapeExtract(gse, 0);
-  geom->Close();
-  delete geom;
-
-  gentle_geom->SetRnrSelf(kFALSE);
-
-  //ITS
-
-  TEveElement::List_i i = gentle_geom->BeginChildren();
-  TEveGeoShape *lvl1 = (TEveGeoShape *) *i;
-
-  //TPC
-  i++;
-
-  //TRD+TOF
-  i++;
-
-  lvl1 = (TEveGeoShape *) *i;
-  lvl1->SetRnrSelf(kFALSE);
-  TEveElement::List_i j = lvl1->BeginChildren();
-
-  TEveGeoShape *trd1 = (TEveGeoShape *) *j;
-  trd1->SetRnrSelf(kTRUE);
-  trd1->SetMainTransparency(80);
-  j++;
-
-  trd1 = (TEveGeoShape *) *j;
-  trd1->SetRnrSelf(kTRUE);
-  trd1->SetMainTransparency(80);
-  j++;
-
-  j++;
-  j++;
-  j++;
-  j++;
-
-  trd1 = (TEveGeoShape *) *j;
-  trd1->SetRnrSelf(kTRUE);
-  trd1->SetMainTransparency(80);
-  j++;
-
-  trd1 = (TEveGeoShape *) *j;
-  trd1->SetRnrSelf(kTRUE);
-  trd1->SetMainTransparency(80);
-  j++;
-
-  trd1 = (TEveGeoShape *) *j;
-  trd1->SetRnrSelf(kTRUE);
-  trd1->SetMainTransparency(80);
-  j++;
-
-  j++;
-  j++;
-  j++;
-  j++;
-  j++;
-
-  trd1 = (TEveGeoShape *) *j;
-  trd1->SetRnrSelf(kTRUE);
-  trd1->SetMainTransparency(80);
-  j++;
-
-  trd1 = (TEveGeoShape *) *j;
-  trd1->SetRnrSelf(kTRUE);
-  trd1->SetMainTransparency(80);
-  j++;
-
-  trd1 = (TEveGeoShape *) *j;
-  trd1->SetRnrSelf(kTRUE);
-  trd1->SetMainTransparency(80);
-  j++;
-
-  trd1 = (TEveGeoShape *) *j;
-  trd1->SetRnrSelf(kTRUE);
-  trd1->SetMainTransparency(80);
-  j++;
-
-  gEve->AddGlobalElement(gentle_geom);
+  
 
   // Standard multi-view
   //=====================
 
   gMultiView = new MultiView();
-  gMultiView->f3DView->GetGLViewer()->SetStyle(TGLRnrCtx::kOutline);
-  gMultiView->f3DView->GetGLViewer()->SetStyle(0);
-  gMultiView->SetDepth(-10);
-  gMultiView->ImportGeomRPhi(gentle_geom);
-  gMultiView->ImportGeomRhoZ(gentle_geom);
-  gMultiView->SetDepth(0);
 
   // Final stuff
   //=============
@@ -1831,6 +1733,7 @@ void alice_vsd( Int_t dataset) {
   //   make_gui(mode);
   gVSDReader = new TVSDReader(vsd_file_name);
 
+  gVSDReader->GeometryDefault();
 
 
   TEveBrowser *browser = gEve->GetBrowser();
