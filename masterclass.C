@@ -4,6 +4,8 @@
 #include <TGListBox.h>
 #include <TGComboBox.h>
 #include <TList.h>
+#include <TGLabel.h>
+#include <TRootHelpDialog.h>
 
 class MasterClassFrame : public TGMainFrame {
 
@@ -26,19 +28,17 @@ public:
 
 void MasterClassFrame::Start()
 {
+  #if defined(__CINT__)
+  {
+    Info("alice_vsd.C", "Has to be run in compiled mode ... doing this for you.");
+    gSystem->CompileMacro("alice_vsd.C");
+  }
+  #else
+    # include "alice_vsd.C"
+  # endif
+  alice_vsd(fDataset->GetSelected());
 
-   #if defined(__CINT__) && !defined(__MAKECINT__)
-   {
-      Info("alice_vsd.C", "Has to be run in compiled mode ... doing this for you.");
-      gSystem->CompileMacro("alice_vsd.C");
-      alice_vsd(fDataset->GetSelected());
-   }
-   #else
-      alice_vsd(fDataset->GetSelected());
-   #endif
-
-   UnmapWindow();
-
+  UnmapWindow();
 }
 
 
@@ -90,27 +90,18 @@ MasterClassFrame::MasterClassFrame(const TGWindow *p, UInt_t w, UInt_t h) :
 
 MasterClassFrame::~MasterClassFrame()
 {
-
    Cleanup();
-
 }
 
 void masterclass()
 {
-
-   gROOT->pwd();
-
    new MasterClassFrame(gClient->GetRoot(), 800, 600);
-
    TRootHelpDialog* instructions = new TRootHelpDialog(gClient->GetRoot(), "MASTERCLASS MENU INSTRUCTIONS", 700, 250);
-
    instructions->SetText("\
 Welcome to ALICE J/psi Masterclass!\n\n\
 \
    You see the window \"Data Selection\". In this window you can select the dataset which you want\n\
    to analyse, either proton-proton collision data or proton-lead collision data. \n\
 ");
-
    instructions->Popup();
-
 }

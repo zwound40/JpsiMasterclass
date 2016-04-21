@@ -848,7 +848,7 @@ For your task you have several tools at hand, which can be found on the left sid
     //Instructions();
 
     TEveBrowser *browser = gEve->GetBrowser();
-
+    browser->GetMainFrame()->DontCallClose();
     browser->GetMainFrame()->SetWindowName("ALICE J/psi Master Class");
 
     if(browser->GetTabRight()->GetTabTab(3))
