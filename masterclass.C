@@ -60,11 +60,7 @@ using namespace std;
 
 class TVSDReader;
 
-
-
-
-
-
+// Detector Information Window
 //______________________________________________________________________________
 //______________________________________________________________________________
 class AliceDetectorInfo : public TGMainFrame
@@ -76,10 +72,7 @@ protected:
 
 public:
 
-  AliceDetectorInfo(const TGWindow *p, UInt_t w, UInt_t h) :
-    TGMainFrame(p, w, h) {
-
-    //DontCallClose();
+  AliceDetectorInfo() {
 
     b1 = 0;
     TGTextButton *b2 = 0;
@@ -125,7 +118,7 @@ public:
 class AliceSelector : public TGMainFrame
 {
 public:
-  TVSDReader* parent;
+  TVSDReader *parent;
   TGTextButton *b;
   TGNumberEntryField *fp1;
   TGNumberEntryField *fp2;
@@ -136,10 +129,8 @@ public:
   TGLabel *val1;
 
   Float_t p1,p2,de1,de2;
-  AliceSelector(const TGWindow *p, TVSDReader* parent, Float_t currentP1, Float_t currentP2, Float_t currentDe1, Float_t currentDe2) :
-    TGMainFrame(p), p1(currentP1), p2(currentP2), de1(currentDe1), de2(currentDe2) {
-    DontCallClose();
-
+  AliceSelector(TVSDReader *parent, Float_t currentP1, Float_t currentP2, Float_t currentDe1, Float_t currentDe2) : 
+  p1(currentP1), p2(currentP2), de1(currentDe1), de2(currentDe2){
     TGGroupFrame *gf = new TGGroupFrame(this, "");
 
 
@@ -179,7 +170,7 @@ public:
     fp1->SetNumber(p1);
     fp2 = new TGNumberEntryField(hf);
     fp2->SetNumber(p2);
-    
+
     hf->AddFrame(val1, new TGLayoutHints(kLHintsExpandX, 1, 1, 1, 1));
     hf->AddFrame(fp1, new TGLayoutHints(kLHintsExpandX, 1, 1, 1, 1));
     hf->AddFrame(fp2, new TGLayoutHints(kLHintsExpandX, 1, 1, 1, 1));
@@ -257,23 +248,20 @@ public:
 class AliceExtractor : public TGMainFrame
 {
 public:
-  TVSDReader* parent;
+  TVSDReader *parent;
   TGTextButton *b;
   TGNumberEntryField *fm1;
   TGNumberEntryField *fm2;
   TGNumberEntryField *JpsiCount;
   TGNumberEntryField *Sigma;
-  TGNumberEntryField *SonB;  
+  TGNumberEntryField *SonB;
   TLine *l5;
   TLine *l6;
   TGLabel *val1;
   Float_t p1,p2,de1,de2;
 
-  AliceExtractor(const TGWindow *p,  TVSDReader* parent, Float_t minm, Float_t maxm) :
-    TGMainFrame(p),l5( 0 ), l6(0 ) {
-    //DontCallClose();
-
-
+  AliceExtractor(TVSDReader *parent, Float_t minm, Float_t maxm) :
+    l5(0), l6(0){
     TGGroupFrame  *gf = new TGGroupFrame(this,"");
 
     const TGFont *font = gClient->GetFont("-*-times-bold-r-*-*-16-*-*-*-*-*-*-*");
@@ -297,7 +285,7 @@ public:
     val1->SetTextJustify(kTextCenterX);
     hf->AddFrame(val1, new TGLayoutHints(kLHintsExpandX, 1, 1, 1, 1));
 
-    val1 = new TGLabel(hf, "min"); 
+    val1 = new TGLabel(hf, "min");
     val1->SetTextJustify(kTextCenterX);
     hf->AddFrame(val1, new TGLayoutHints(kLHintsExpandX, 1, 1, 1, 1));
 
@@ -346,8 +334,8 @@ public:
     SonB->SetEnabled(kFALSE);
     hf->AddFrame(SonB, new TGLayoutHints(kLHintsExpandX, 2, 2, 5, 1));
     gf->AddFrame(hf, new TGLayoutHints(kLHintsExpandX, 2, 2, 5, 1));
-    
-    
+
+
     hf = new TGHorizontalFrame(gf, 240, 20, kFixedWidth);
     val1 = new TGLabel(hf, "Significance");
     val1->SetTextJustify(kTextCenterX);
@@ -356,7 +344,7 @@ public:
     Sigma->SetEnabled(kFALSE);
     hf->AddFrame(Sigma, new TGLayoutHints(kLHintsExpandX, 2, 2, 5, 1));
     gf->AddFrame(hf, new TGLayoutHints(kLHintsExpandX, 2, 2, 5, 1));
-    
+
 
     b = new TGTextButton(gf, "Close");
     b->Connect("Pressed()", "AliceExtractor", this, "UnmapWindow()");
@@ -402,11 +390,9 @@ public:
 
 
 
-
+// Main class that does all the work
 //______________________________________________________________________________
 //______________________________________________________________________________
-
-
 
 class TVSDReader
 {
@@ -426,7 +412,7 @@ public:
   TGTextButton *fButtonDefineTrackCuts;
   TGTextButton *fButtonApplayTrackCuts;
   TGTextButton *fButtonFillInvMass;
-  TGTextButton *fButtonJumpEvents; 
+  TGTextButton *fButtonJumpEvents;
   TGCheckButton *fCheckboxLoadTracks;
   TGCheckButton *fCheckboxApplyTrackCuts;
   TGCheckButton *fCheckboxQuickAnalysis;
@@ -453,7 +439,7 @@ public:
   Float_t p1,p2,de1,de2;
   AliceDetectorInfo *gAliceDetectorInfo;
   AliceSelector *gAliceSelector;
-  AliceExtractor *gAliceExtractor;  
+  AliceExtractor *gAliceExtractor;
   Int_t numJpsi;
   Int_t bg;
   Float_t significance;
@@ -466,8 +452,8 @@ public:
   TLine *l4;
   TLine *l5;
   TLine *l6;
-  
-  
+
+
 
   // ----------------------------------------------------------
   // Event visualization structures
@@ -481,39 +467,39 @@ public:
 
 public:
   TVSDReader(const char *file_name) :
-  fFile(0), 
-  fDirectory(0), 
-  fEvDirKeys(0),
-  fVSD(0),
-  fMaxEv(-1),
-  fCurEv(-1),
-  fMaxR(600),
-  fLoadTracks(kFALSE),
-  fGeometrySet(kTRUE), 
-  fApplyTrackCuts(kFALSE),
-  fEnableQuickAnalysis(kFALSE),
-  fTrackList(0),
-  fButtonLoadTracks(0),
-  fButtonFillPidHistos(0),
-  fButtonDefineTrackCuts(0),
-  fButtonApplayTrackCuts(0),
-  fButtonFillInvMass(0),
-  fButtonJumpEvents(0),
-  fCheckboxLoadTracks(0),
-  fCheckboxApplyTrackCuts(0),
-  fCheckboxQuickAnalysis(0),
-  fLabelEventNumber(0),
-  epsilon(0.01),
-  l1(0x0),
-  l2(0x0),
-  l3(0x0),
-  l4(0x0),
-  l5(0x0),
-  l6(0x0)
+    fFile(0),
+    fDirectory(0),
+    fEvDirKeys(0),
+    fVSD(0),
+    fMaxEv(-1),
+    fCurEv(-1),
+    fMaxR(600),
+    fLoadTracks(kFALSE),
+    fGeometrySet(kTRUE),
+    fApplyTrackCuts(kFALSE),
+    fEnableQuickAnalysis(kFALSE),
+    fTrackList(0),
+    fButtonLoadTracks(0),
+    fButtonFillPidHistos(0),
+    fButtonDefineTrackCuts(0),
+    fButtonApplayTrackCuts(0),
+    fButtonFillInvMass(0),
+    fButtonJumpEvents(0),
+    fCheckboxLoadTracks(0),
+    fCheckboxApplyTrackCuts(0),
+    fCheckboxQuickAnalysis(0),
+    fLabelEventNumber(0),
+    epsilon(0.01),
+    l1(0x0),
+    l2(0x0),
+    l3(0x0),
+    l4(0x0),
+    l5(0x0),
+    l6(0x0)
   {
-    
+
     fFile = TFile::Open(file_name);
-    
+
     if (!fFile) {
       printf("VSD_Reader : Can not open file '%s' ... terminating.", file_name);
       gSystem->Exit(1);
@@ -523,8 +509,8 @@ public:
     fEvDirKeys = new TObjArray;
     TPMERegexp name_re("Event\\d+");
     TObject *obj =0x0;
-    
-    TList* keys = fFile->GetListOfKeys();
+
+    TList *keys = fFile->GetListOfKeys();
     Int_t i =0;
     while ( ( obj = keys->At(i) ) ) {
 
@@ -541,7 +527,7 @@ public:
     }
 
     fVSD = new TEveVSD;
-      
+
     gJpsiHist = new TH1F("Statistics Jpsi","Difference: EP - (EE + PP) ",60,0.,6);
     gJpsiHist->SetLineColor(6);
     gJpsiHist->SetMarkerColor(6);
@@ -576,7 +562,7 @@ public:
     gpHist = new TH1F("copy e^{+} e^{+}","e^{+} e^{+} Distribution",60,0.,6);
     gpHist->Sumw2();
 
-    
+
     Int_t nbinsX = 200;
     Int_t nbinsY = 120;
     Float_t  *binLimitsX = new Float_t[nbinsX+1];
@@ -586,11 +572,11 @@ public:
     Float_t firstY = 20.;
     Float_t lastY = 140.;
     Float_t expMax=TMath::Log(lastX/firstX);
-    for (Int_t i=0; i<nbinsX+1; ++i){
+    for (Int_t i=0; i<nbinsX+1; ++i) {
       binLimitsX[i]=firstX*TMath::Exp(expMax/nbinsX*(Float_t)i);
     }
-    for (Int_t i=0; i<nbinsY+1; ++i){
-      binLimitsY[i] = firstY + i * (lastY - firstY) / nbinsY; 
+    for (Int_t i=0; i<nbinsY+1; ++i) {
+      binLimitsY[i] = firstY + i * (lastY - firstY) / nbinsY;
     }
     gEnergyLoss = new TH2F("Specific Energy Loss","Specific Energy Loss",nbinsX, binLimitsX,nbinsY, binLimitsY );
     gEnergyLoss->GetXaxis()->SetTitle("momentum (GeV/c)");
@@ -616,16 +602,16 @@ public:
   }
 
   void Selector() {
-    gAliceSelector = new AliceSelector(gClient->GetRoot(), this, p1, p2, de1, de2);
+    gAliceSelector = new AliceSelector(this, p1, p2, de1, de2);
   }
-  
+
   void SetPIDCutValues() {
 
     p1 = gAliceSelector->fp1->GetNumber();
     p2 = gAliceSelector->fp2->GetNumber();
     de1 = gAliceSelector->fde1->GetNumber();
     de2 = gAliceSelector->fde2->GetNumber();
-    
+
     if(l1) delete l1;
     if(l2) delete l2;
     if(l3) delete l3;
@@ -673,9 +659,9 @@ public:
     l4->Draw();
     pad2->cd()->Update();
   }
-  
+
   void SetMassLineValues() {
- 
+
     if(l5) delete l5;
     if(l6) delete l6;
     l5 = new TLine;
@@ -702,13 +688,12 @@ public:
     l6->Draw();
     pad->cd(2)->Update();
   }
-  
+
   void CalculateIntegral() {
     minm = gAliceExtractor->fm1->GetNumber();
     maxm = gAliceExtractor->fm2->GetNumber();
     Int_t massBin1 = gJpsiHist->FindBin( minm + epsilon );
     Int_t massBin2 = gJpsiHist->FindBin( maxm - epsilon );
-    cout << massBin1 << "<m<"<<massBin2<<endl;
     numJpsi = gJpsiHist->Integral(massBin1,massBin2);
     bg = (geeHist->Integral(massBin1,massBin2)) + (gppHist->Integral(massBin1,massBin2));
     if(numJpsi + bg > 0.) {
@@ -717,19 +702,19 @@ public:
     if(bg > 0.0) {
       sb = numJpsi / bg;
     }
-    else if( numJpsi > 0.0 ){
-     sb =  9999.;
+    else if( numJpsi > 0.0 ) {
+      sb =  9999.;
     }
   }
 
-  
-  void SetExtractorFieldValues(){
+
+  void SetExtractorFieldValues() {
     gAliceExtractor->JpsiCount->SetNumber(numJpsi);
     gAliceExtractor->Sigma->SetNumber(significance);
     gAliceExtractor->SonB->SetNumber(sb);
   }
-  
-  
+
+
   void Autosave() {
     ofstream myresult;
     myresult.open ("masterclass.save", std::ofstream::out | std::ofstream::app);
@@ -743,25 +728,25 @@ public:
     myresult << endl;
     myresult.close();
   }
-  
-  
+
+
   void Extractor() {
-    gAliceExtractor = new AliceExtractor(gClient->GetRoot(), this, minm, maxm);
+    gAliceExtractor = new AliceExtractor(this, minm, maxm);
   }
 
   void DetectorInfo() {
-    gAliceDetectorInfo = new AliceDetectorInfo(gClient->GetRoot(), 100, 100);
+    gAliceDetectorInfo = new AliceDetectorInfo();
   }
 
   void Instructions() {
 
-    TGMainFrame *instructions = new TGMainFrame(gClient->GetRoot(), 800, 600);
-    
+    TGMainFrame *instructions = new TGMainFrame();
+
     instructions->SetWindowName("Instructions: ALICE masterclass on J/psi production");
     TGGroupFrame *gf = new TGGroupFrame(instructions, "");
-    
-    TGHorizontalFrame* hf = new TGHorizontalFrame(gf, 750, 350, kFixedWidth);
-    TGTextView * helpText = new TGTextView(hf, 760, 400);
+
+    TGHorizontalFrame *hf = new TGHorizontalFrame(gf, 750, 350, kFixedWidth);
+    TGTextView *helpText = new TGTextView(hf, 760, 400);
     helpText->LoadBuffer( "\
 Your task is to reconstruct signals of the production of the J/psi particle in data recorded in\n\
 proton-proton or proton-lead collisions with the ALICE detector at the LHC at CERN.\n\
@@ -791,17 +776,20 @@ So in order to reconstruct J/psi particles from collision data we have to do the
 \n\n\
 For your task you have several tools at hand, which can be found on the left side of the program:\n\
   Event Navigation: section you can browser through the recorded collisions events.\n\
-  Display: you can choose whether to display the reconstructed particle tracks\n\
-    of the selected event, and whether to show only those tracks which match the selection criteria \n\
-    defined in the \"Track Cuts\" window (see below). Additionally you can choose whether to show or\n\
-    not the detectors and a coordinate system   and you can change the background color.\n\
   Analysis Tools:\n\
-    Track cuts: Here you can choose PID and momentum cuts for the tracks, in order to select only\n\
-      electrons and positrons, optimally only those coming from a J/psi decay.\n\
-    Signal extraction: Calculate from the invariant mass plots the number of found J/psis,\n\
-      the signal over background ratio and the significance of the signal.\n\
-  Plots: Plot for the selected tracks the specific energy loss as a function of the track momentum\n\
-    and for the pairs of these tracks the invariant mass distributions.\n\
+    Here you can \n\
+      - Load the tracks of the selected event\n\
+      - Plot for the tracks the specific energy loss in the TPC as a function of momentum\n\
+      - Define cuts to be applied on the tracks \n\
+      - Apply the defined cuts on your track selection\n\
+      - Fill the invariant mass distributions for the selected tracks for electron-electron,\n\
+        positron-positron and electron-positron pairs\n\
+      - extract the signal by defining a mass range and counting the entries in the background \n\
+        subtracted invariant mass histogramm\n\
+  Steering:\n\
+    Here you can choose whether to show the ALICE detectors, change the background color, clear all\n\
+    filled histograms or restart the analysis from event 1\n\
+  Quick Analysis:\n\
   Quick analysis: Once you have found satisfying track cuts and tested them on some events,\n\
     you can analyze more events more quickly by automatically looping over a given number\n\
     of events and filling the histograms automatically.\n\
@@ -821,28 +809,28 @@ For your task you have several tools at hand, which can be found on the left sid
       - electrons with positrons\n\
     and a plot where the electron-electron and positron positron distribution is subtracted from the \n\
     electron-positron distribution.");
-   
+
     hf->AddFrame(helpText, new TGLayoutHints(kLHintsExpandX, 1, 1, 1, 1));
     gf->AddFrame(hf, new TGLayoutHints(kLHintsExpandX, 1,1,1,1));
-    
+
     hf = new TGHorizontalFrame(gf, 100, 400, kFixedWidth);
     TGTextButton *b = new TGTextButton(hf,"Particle Identification Plot");
     b->Connect("Clicked()","TVSDReader", this,"DetectorInfo()");
     hf->AddFrame(b, new TGLayoutHints(kLHintsExpandX, 1, 1, 1, 1));
-    
+
     b = new TGTextButton(hf,"Close");
     b->Connect("Clicked()", "TGMainFrame", instructions, "UnmapWindow()");
     hf->AddFrame(b, new TGLayoutHints(kLHintsExpandX, 1, 1, 1, 1));
     gf->AddFrame(hf, new TGLayoutHints(kLHintsExpandX, 1, 1, 1, 1));
 
-    
+
     instructions->AddFrame(gf, new TGLayoutHints(kLHintsExpandX, 1, 1, 1, 1));
     instructions->MapSubwindows();
-    
+
     instructions->Resize(instructions->GetDefaultSize());
     instructions->MapWindow();
-    
-    
+
+
     //instructions->Popup();
   }
 
@@ -941,50 +929,50 @@ For your task you have several tools at hand, which can be found on the left sid
           fButtonLoadTracks = new TGTextButton(hf, "Load Tracks");
           fButtonLoadTracks->Connect("Clicked()", "TVSDReader", this, "LoadTracks()");
           hf->AddFrame(fButtonLoadTracks, new TGLayoutHints(kLHintsExpandX));
-          
+
           fCheckboxLoadTracks = new TGCheckButton(hf, "", 10);
           fCheckboxLoadTracks->SetEnabled(kFALSE);
           hf->AddFrame(fCheckboxLoadTracks);
         }
         vf->AddFrame(hf, new TGLayoutHints(kLHintsExpandX, 1, 1, 1, 1));
-        
-        
+
+
         fButtonFillPidHistos = new TGTextButton(vf,"Fill PID Histogram");
         fButtonFillPidHistos->Connect("Pressed()","TVSDReader",this,"FillEnergyLossHisto()");
         vf->AddFrame(fButtonFillPidHistos, new TGLayoutHints(kLHintsExpandX, 2, 2, 5, 1));
-        
+
         fButtonDefineTrackCuts = new TGTextButton(vf, "Define Track Cuts");
         fButtonDefineTrackCuts->Connect("Pressed()", "TVSDReader", this, "Selector()");
         vf->AddFrame(fButtonDefineTrackCuts,new TGLayoutHints(kLHintsExpandX,1, 1, 1, 1));
-        
-        
+
+
         hf = new TGHorizontalFrame(vf, 200, 20, kFixedWidth);
         {
           fButtonApplayTrackCuts = new TGTextButton(hf, "Apply Track Cuts");
           fButtonApplayTrackCuts->SetEnabled(kFALSE);
           fButtonApplayTrackCuts->Connect("Clicked()", "TVSDReader", this, "SwapApplyTrackCuts()");
           hf->AddFrame(fButtonApplayTrackCuts, new TGLayoutHints(kLHintsExpandX));
-          
+
           fCheckboxApplyTrackCuts = new TGCheckButton(hf, "", 10);
           fCheckboxApplyTrackCuts->SetEnabled(kFALSE);
           hf->AddFrame(fCheckboxApplyTrackCuts);
         }
         vf->AddFrame(hf, new TGLayoutHints(kLHintsExpandX, 1, 1, 1, 1));
-        
+
         fButtonFillInvMass = new TGTextButton(vf, "Fill Invariant Mass Histograms");
         fButtonFillInvMass->Connect("Pressed()", "TVSDReader", this, "FillInvariantMassHistos()");
         vf->AddFrame(fButtonFillInvMass, new TGLayoutHints(kLHintsExpandX, 2, 2, 5, 1));
-        
-        
+
+
         b = new TGTextButton(vf, "Extract Signal");
         b->Connect("Pressed()", "TVSDReader", this, "Extractor()");
         vf->AddFrame(b,new TGLayoutHints(kLHintsExpandX,1, 1, 1, 1));
-        
+
       }
       gf->AddFrame(vf, new TGLayoutHints(kLHintsExpandX | kLHintsCenterY));
-    }  
+    }
     frmMain->AddFrame(gf);
-    
+
     gf = new TGGroupFrame(frmMain, "Steering");
     {
       vf = new TGVerticalFrame(gf, 200, 20, kFixedWidth);
@@ -993,22 +981,22 @@ For your task you have several tools at hand, which can be found on the left sid
         b->Connect("Clicked()", "TVSDReader", this, "ChangeGeometry()");
         vf->AddFrame(b, new TGLayoutHints(kLHintsExpandX, 1, 1, 1, 1));
 
-        
+
         b = new TGTextButton(vf, "Background Color");
         b->Connect("Clicked()", "TVSDReader", this, "ChangeBackgroundColor()");
         vf->AddFrame(b, new TGLayoutHints(kLHintsExpandX, 1, 1, 1, 1));
-        
-        
+
+
         b = new TGTextButton(vf, "Clear Histograms");
         b->Connect("Pressed()", "TVSDReader", this, "ClearHisto()");
         vf->AddFrame(b, new TGLayoutHints(kLHintsExpandX, 2, 2, 5, 1));
-        
-        
+
+
         b = new TGTextButton(vf, "Restart");
         b->Connect("Pressed()", "TVSDReader", this, "ClearHisto()");
         b->Connect("Pressed()", "TVSDReader", this, "BeginAgain()");
         vf->AddFrame(b, new TGLayoutHints(kLHintsExpandX, 1, 1, 1, 1));
-        
+
       }
       gf->AddFrame(vf, new TGLayoutHints(kLHintsExpandX | kLHintsCenterY));
     }
@@ -1088,7 +1076,7 @@ For your task you have several tools at hand, which can be found on the left sid
     gEnergyLoss->Draw();
 
     browser->StopEmbedding("Particle Identification");
-  //  GotoEvent(0);
+    //  GotoEvent(0);
     browser->GetTabRight()->SetTab(1);
 
     browser->StopEmbedding(" ");
@@ -1110,7 +1098,7 @@ For your task you have several tools at hand, which can be found on the left sid
     gppHist->Draw("ep");
 
     browser->StopEmbedding("Invariant Mass");
-  //  GotoEvent(0);
+    //  GotoEvent(0);
     browser->GetTabRight()->SetTab(1);
 
   }
@@ -1180,64 +1168,64 @@ For your task you have several tools at hand, which can be found on the left sid
     lvl1->SetRnrSelf(kFALSE);
     TEveElement::List_i j = lvl1->BeginChildren();
 
-      TEveGeoShape *trd1 = (TEveGeoShape *) *++j;
-  trd1->SetRnrSelf(kTRUE);
-  trd1->SetMainTransparency(80);
+    TEveGeoShape *trd1 = (TEveGeoShape *) *++j;
+    trd1->SetRnrSelf(kTRUE);
+    trd1->SetMainTransparency(80);
 
-  trd1 = (TEveGeoShape *) *++j;
-  trd1->SetRnrSelf(kTRUE);
-  trd1->SetMainTransparency(80);
-  trd1 = (TEveGeoShape *) *++j;
-  trd1->SetRnrSelf(kTRUE);
-  trd1->SetMainTransparency(80);
-  trd1 = (TEveGeoShape *) *++j;
-  trd1->SetRnrSelf(kTRUE);
-  trd1->SetMainTransparency(80);
-  trd1 = (TEveGeoShape *) *++j;
-  trd1->SetRnrSelf(kTRUE);
-  trd1->SetMainTransparency(80);
-  trd1 = (TEveGeoShape *) *++j;
-  trd1->SetRnrSelf(kTRUE);
-  trd1->SetMainTransparency(80);
-  trd1 = (TEveGeoShape *) *++j;
-  trd1->SetRnrSelf(kTRUE);
-  trd1->SetMainTransparency(80);
-  trd1 = (TEveGeoShape *) *++j;
-  trd1->SetRnrSelf(kTRUE);
-  trd1->SetMainTransparency(80);
-  trd1 = (TEveGeoShape *) *++j;
-  trd1->SetRnrSelf(kTRUE);
-  trd1->SetMainTransparency(80);
-  trd1 = (TEveGeoShape *) *++j;
-  trd1->SetRnrSelf(kTRUE);
-  trd1->SetMainTransparency(80);
-  trd1 = (TEveGeoShape *) *++j;
-  trd1->SetRnrSelf(kTRUE);
-  trd1->SetMainTransparency(80);
-  trd1 = (TEveGeoShape *) *++j;
-  trd1->SetRnrSelf(kTRUE);
-  trd1->SetMainTransparency(80);
-  trd1 = (TEveGeoShape *) *++j;
-  trd1->SetRnrSelf(kTRUE);
-  trd1->SetMainTransparency(80);
-  trd1 = (TEveGeoShape *) *++j;
-  trd1->SetRnrSelf(kTRUE);
-  trd1->SetMainTransparency(80);
-  trd1 = (TEveGeoShape *) *++j;
-  trd1->SetRnrSelf(kTRUE);
-  trd1->SetMainTransparency(80);
-  trd1 = (TEveGeoShape *) *++j;
-  trd1->SetRnrSelf(kTRUE);
-  trd1->SetMainTransparency(80);
-  trd1 = (TEveGeoShape *) *++j;
-  trd1->SetRnrSelf(kTRUE);
-  trd1->SetMainTransparency(80);
-  trd1 = (TEveGeoShape *) *++j;
-  trd1->SetRnrSelf(kTRUE);
-  trd1->SetMainTransparency(80);
-  trd1 = (TEveGeoShape *) *++j;
-  trd1->SetRnrSelf(kTRUE);
-  trd1->SetMainTransparency(80);
+    trd1 = (TEveGeoShape *) *++j;
+    trd1->SetRnrSelf(kTRUE);
+    trd1->SetMainTransparency(80);
+    trd1 = (TEveGeoShape *) *++j;
+    trd1->SetRnrSelf(kTRUE);
+    trd1->SetMainTransparency(80);
+    trd1 = (TEveGeoShape *) *++j;
+    trd1->SetRnrSelf(kTRUE);
+    trd1->SetMainTransparency(80);
+    trd1 = (TEveGeoShape *) *++j;
+    trd1->SetRnrSelf(kTRUE);
+    trd1->SetMainTransparency(80);
+    trd1 = (TEveGeoShape *) *++j;
+    trd1->SetRnrSelf(kTRUE);
+    trd1->SetMainTransparency(80);
+    trd1 = (TEveGeoShape *) *++j;
+    trd1->SetRnrSelf(kTRUE);
+    trd1->SetMainTransparency(80);
+    trd1 = (TEveGeoShape *) *++j;
+    trd1->SetRnrSelf(kTRUE);
+    trd1->SetMainTransparency(80);
+    trd1 = (TEveGeoShape *) *++j;
+    trd1->SetRnrSelf(kTRUE);
+    trd1->SetMainTransparency(80);
+    trd1 = (TEveGeoShape *) *++j;
+    trd1->SetRnrSelf(kTRUE);
+    trd1->SetMainTransparency(80);
+    trd1 = (TEveGeoShape *) *++j;
+    trd1->SetRnrSelf(kTRUE);
+    trd1->SetMainTransparency(80);
+    trd1 = (TEveGeoShape *) *++j;
+    trd1->SetRnrSelf(kTRUE);
+    trd1->SetMainTransparency(80);
+    trd1 = (TEveGeoShape *) *++j;
+    trd1->SetRnrSelf(kTRUE);
+    trd1->SetMainTransparency(80);
+    trd1 = (TEveGeoShape *) *++j;
+    trd1->SetRnrSelf(kTRUE);
+    trd1->SetMainTransparency(80);
+    trd1 = (TEveGeoShape *) *++j;
+    trd1->SetRnrSelf(kTRUE);
+    trd1->SetMainTransparency(80);
+    trd1 = (TEveGeoShape *) *++j;
+    trd1->SetRnrSelf(kTRUE);
+    trd1->SetMainTransparency(80);
+    trd1 = (TEveGeoShape *) *++j;
+    trd1->SetRnrSelf(kTRUE);
+    trd1->SetMainTransparency(80);
+    trd1 = (TEveGeoShape *) *++j;
+    trd1->SetRnrSelf(kTRUE);
+    trd1->SetMainTransparency(80);
+    trd1 = (TEveGeoShape *) *++j;
+    trd1->SetRnrSelf(kTRUE);
+    trd1->SetMainTransparency(80);
 
 
     gEve->AddGlobalElement(gentle_geom);
@@ -1274,7 +1262,7 @@ For your task you have several tools at hand, which can be found on the left sid
   }
 
   void DropEvent() {
-    
+
 
     // Drop currently held event data, release current directory.
 
@@ -1284,9 +1272,9 @@ For your task you have several tools at hand, which can be found on the left sid
 
     if(fTrackList)
       //fTrackList->DestroyElements();
-    //delete fTrackList;
-    fTrackList = 0;
-    
+      //delete fTrackList;
+      fTrackList = 0;
+
     // Drop old event-data.
     fVSD->DeleteTrees();
     delete fDirectory;
@@ -1301,17 +1289,17 @@ For your task you have several tools at hand, which can be found on the left sid
     p2=0.;
     de1=0.;
     de2=0.;
-    
+
     fLoadTracks = kFALSE;
     fApplyTrackCuts = kFALSE;
     fEnableQuickAnalysis = kFALSE;
-    
+
     fButtonLoadTracks->SetEnabled( kTRUE );
     fButtonFillPidHistos->SetEnabled( kTRUE );
     fButtonDefineTrackCuts->SetEnabled( kTRUE);
     fButtonApplayTrackCuts->SetEnabled( kTRUE );
     fButtonFillInvMass->SetEnabled( kTRUE );
-    
+
     fCheckboxQuickAnalysis->SetDisabledAndSelected(kFALSE);
     fCheckboxApplyTrackCuts->SetDisabledAndSelected(kFALSE);
     fCheckboxLoadTracks->SetDisabledAndSelected(kFALSE);
@@ -1322,28 +1310,26 @@ For your task you have several tools at hand, which can be found on the left sid
 
 
   void NextEvent( ) {
-    if(fCurEv < fMaxEv-1){
+    if(fCurEv < fMaxEv-1) {
       ResetMatrices();
       GotoEvent(fCurEv + 1 );
     }
   }
 
   void PrevEvent() {
-    if(fCurEv!= 0){
+    if(fCurEv!= 0) {
       ResetMatrices();
       GotoEvent(fCurEv - 1);
     }
   }
 
   Bool_t GotoEvent(Int_t ev) {
-
-    //cout << "going to event " << ev<<endl;
-
+    
     if (ev < 0 || ev >= fMaxEv) {
       printf("GotoEvent: fMaxEv = fEvDirKeys->GetEntriesFast();Invalid event id %d.", ev);
       return kFALSE;
     }
-      
+
     DropEvent();
 
     fCurEv = ev;
@@ -1354,8 +1340,7 @@ For your task you have several tools at hand, which can be found on the left sid
 
     // Load event data into visualization structures.
 
-
-    if( fLoadTracks ){
+    if( fLoadTracks ) {
       LoadTracksFromTree(fMaxR);
     }
     if(fEnableQuickAnalysis) {
@@ -1363,8 +1348,8 @@ For your task you have several tools at hand, which can be found on the left sid
       FillEnergyLossHisto();
     }
 
-    else{
-      
+    else {
+
       TEveElement *top = gEve->GetCurrentEvent();
       if(gMultiView) {
         gMultiView->DestroyEventRPhi();
@@ -1379,31 +1364,31 @@ For your task you have several tools at hand, which can be found on the left sid
 
   void SwapQuickAnalysis() {
     Bool_t enable = !fEnableQuickAnalysis;
-    
-    
+
+
     fButtonLoadTracks->SetEnabled( !enable );
     fButtonFillPidHistos->SetEnabled( !enable );
     fButtonDefineTrackCuts->SetEnabled( !enable);
     fButtonApplayTrackCuts->SetEnabled( !enable );
     fButtonFillInvMass->SetEnabled( !enable );
-    
-    
+
+
     fEnableQuickAnalysis = enable;
     fCheckboxQuickAnalysis->SetDisabledAndSelected(enable);
     fButtonJumpEvents->SetEnabled(enable);
-    
-    if(enable){
-     fLoadTracks = kTRUE;
-     fCheckboxApplyTrackCuts->SetEnabled(kFALSE);
-     fCheckboxLoadTracks->SetDisabledAndSelected(kTRUE);
+
+    if(enable) {
+      fLoadTracks = kTRUE;
+      fCheckboxApplyTrackCuts->SetEnabled(kFALSE);
+      fCheckboxLoadTracks->SetDisabledAndSelected(kTRUE);
     }
-    
+
   }
 
   void EventsJump() {
     if(fEnableQuickAnalysis) {
       Int_t nLoop;
-      if(fNLoop->GetNumber() + fCurEv < fMaxEv){
+      if(fNLoop->GetNumber() + fCurEv < fMaxEv) {
         nLoop = fNLoop->GetNumber();
       }
       else {
@@ -1435,17 +1420,15 @@ For your task you have several tools at hand, which can be found on the left sid
       GotoEvent(fCurEv);
       if(fCheckboxLoadTracks)
         fCheckboxLoadTracks->SetDisabledAndSelected(kFALSE);
-    } 
+    }
     else {
       fLoadTracks=kTRUE;
-      printf("Loading Esd Tracks...\n");
       GotoEvent(fCurEv);
-      printf("Esd Tracks loaded.\n");
       fCheckboxLoadTracks->SetDisabledAndSelected(kTRUE);
     }
   }
 
-  
+
   void EnableTrackCutsButton() {
     fButtonApplayTrackCuts->SetEnabled(kTRUE);
   }
@@ -1464,32 +1447,29 @@ For your task you have several tools at hand, which can be found on the left sid
       ApplyTrackCuts();
     }
   }
-  
-  void ApplyTrackCuts(){
-      fApplyTrackCuts = kTRUE;
-      printf("Loading Electron Tracks...\n");
-      GotoEvent(fCurEv);
-      printf("Electron Tracks loaded.\n");
-      fCheckboxApplyTrackCuts->SetDisabledAndSelected(kTRUE);
-      if(gAliceSelector){
-        pad2->cd();
-        PlotPIDLines();
-        pad2->cd()->Update();
-      }
+
+  void ApplyTrackCuts() {
+    fApplyTrackCuts = kTRUE;
+    GotoEvent(fCurEv);
+    fCheckboxApplyTrackCuts->SetDisabledAndSelected(kTRUE);
+    if(gAliceSelector) {
+      pad2->cd();
+      PlotPIDLines();
+      pad2->cd()->Update();
+    }
   }
 
 
   //---------------------------------------------------------------------------
   // Track loading
   //---------------------------------------------------------------------------
-  
+
   void LoadTracksFromTree(Int_t maxR) {
-    //cout<<"LoadTracksFromTree called"<<endl;
     if ( !fTrackList ) {
       fTrackList = new TEveTrackList("ESD Tracks");
       fTrackList->SetMainColor(kBlue);
       //fTrackList->IncDenyDestroy();
-    }  
+    }
     else {
       fTrackList->DestroyElements();
     }
@@ -1499,12 +1479,12 @@ For your task you have several tools at hand, which can be found on the left sid
 
 
     TTree *fTreeR = fVSD->fTreeR;
-    if(fTreeR){
+    if(fTreeR) {
       Int_t nTracks = fTreeR->GetEntries();
 
       ResetMatrices();
       ResetDedxArray();
-      
+
       for (Int_t i = 0; i < nTracks; ++i) {
 
         fTreeR->GetEntry(i);
@@ -1516,8 +1496,8 @@ For your task you have several tools at hand, which can be found on the left sid
         Float_t dedx = track->GetStatus();
         Int_t charge = track->GetCharge();
         Float_t pSquared = px*px + py*py + pz*pz;
-        
-        if( fApplyTrackCuts &&  (dedx >= de2 || dedx < de1 || pSquared >= p2*p2 || pSquared <= p1*p1)    ){
+
+        if( fApplyTrackCuts &&  (dedx >= de2 || dedx < de1 || pSquared >= p2*p2 || pSquared <= p1*p1)    ) {
           track->Destroy();
           continue;
         }
@@ -1526,10 +1506,10 @@ For your task you have several tools at hand, which can be found on the left sid
         gArrP[i] = TMath::Sqrt(px*px + py*py + pz*pz);
         gArrdEdx[i] = dedx;
 
-        
-// Fill arrays for invariant mass calculation        
-        
-// if energy loss below threshold, assume particle is a pion, otherwise assume it is an electron        
+
+// Fill arrays for invariant mass calculation
+
+// if energy loss below threshold, assume particle is a pion, otherwise assume it is an electron
         Float_t massSquared = dedx>62 ? 0. : 0.019;
         Float_t e = TMath::Sqrt( pSquared + massSquared );
         if(charge > 0) {
@@ -1549,9 +1529,9 @@ For your task you have several tools at hand, which can be found on the left sid
         track->SetAttLineAttMarker(fTrackList);
         fTrackList->AddElement(track);
       }
-      
-     }
-    fTrackList->MakeTracks(); 
+
+    }
+    fTrackList->MakeTracks();
     gEve->AddElement(fTrackList);
     gEve->Redraw3D();
   }
@@ -1619,7 +1599,7 @@ For your task you have several tools at hand, which can be found on the left sid
 
       ResetMatrices();
 
-    } 
+    }
     else {
       TRootHelpDialog *startMessage = new TRootHelpDialog(gClient->GetRoot(),"warning",400,100);
       startMessage->SetText("Load tracks before filling invariant mass histos!");
@@ -1639,8 +1619,8 @@ For your task you have several tools at hand, which can be found on the left sid
     geHist->Reset();
     gpHist->Reset();
   }
-  
-  
+
+
   void ResetDedxArray() {
     for(int i = 0; i < nSelectedTracks; i++) {
       gArrP[i] = 0;
@@ -1648,8 +1628,8 @@ For your task you have several tools at hand, which can be found on the left sid
     }
     nSelectedTracks = 0;
   }
-  
-  
+
+
 
   void ClearHisto() {
 
@@ -1658,11 +1638,11 @@ For your task you have several tools at hand, which can be found on the left sid
     gMinvHist->Draw();
     pad->cd(1)->Update();
 
-    pad2->cd ();  
+    pad2->cd ();
     gEnergyLoss->Reset();
     gEnergyLoss->Draw();
     pad2->cd()->Update();
-    
+
     pad->cd(3);
     geeHist->Reset();
     geeHist->Draw();
@@ -1678,24 +1658,24 @@ For your task you have several tools at hand, which can be found on the left sid
     gJpsiHist->Draw();
     pad->cd(2)->Update();
   }
-  
 
-  void FillEnergyLossHisto() {    
+
+  void FillEnergyLossHisto() {
     if( fLoadTracks   ) {
-      if( nSelectedTracks > 0 ){
+      if( nSelectedTracks > 0 ) {
         for(int i = 0; i < nSelectedTracks; i++) {
 
           gEnergyLoss->Fill( gArrP[i],gArrdEdx[i] );
         }
         pad2->cd();
         gEnergyLoss->Draw("colz");
-        if( fApplyTrackCuts && gAliceSelector ){
+        if( fApplyTrackCuts && gAliceSelector ) {
           PlotPIDLines();
         }
         pad2->cd()->Update();
         ResetDedxArray();
       }
-    } 
+    }
     else {
       TRootHelpDialog *startMessage = new TRootHelpDialog(gClient->GetRoot(),"warning",400,100);
       startMessage->SetText("Load tracks before filling energy loss histos!");
@@ -1706,13 +1686,13 @@ For your task you have several tools at hand, which can be found on the left sid
   ClassDef(TVSDReader, 0);
 };
 
+
 //______________________________________________________________________________
 void alice_vsd( Int_t dataset) {
 
   TString vsd_file_name;
 
   vsd_file_name = Form("data/events/events_%i.root",dataset);
-  cout << vsd_file_name.Data() << endl;
 
   // Main function, initializes the application.
   //
@@ -1727,13 +1707,13 @@ void alice_vsd( Int_t dataset) {
   TEveVSD::DisableTObjectStreamersForVSDStruct();
 
   TEveManager::Create(kTRUE,"FV");
-  
+
 
   // Final stuff
   //=============
 
   gEve->GetDefaultGLViewer()->SetStyle(TGLRnrCtx::kOutline);
-  TVSDReader * gVSDReader = new TVSDReader(vsd_file_name);
+  TVSDReader *gVSDReader = new TVSDReader(vsd_file_name);
   gVSDReader->GeometryDefault();
 
   gEve->GetViewers()->SwitchColorSet();
@@ -1768,65 +1748,35 @@ void alice_vsd( Int_t dataset) {
 
 
 
-
 class MasterClassFrame : public TGMainFrame {
 
 private:
 
-   TGTextButton		*fExample;
-   TGTextButton		*fStudent;
-   TGTextButton		*fTeacher;
-   TGTextButton		*fExit;
-   TGComboBox		*fDataset;
+  TGTextButton   *fExample;
+  TGTextButton   *fStudent;
+  TGTextButton   *fTeacher;
+  TGTextButton   *fExit;
+  TGComboBox   *fDataset;
 
 public:
 
-   MasterClassFrame(const TGWindow *p, UInt_t w, UInt_t h);
-   virtual ~MasterClassFrame();
-   void Start();
-
-   ClassDef(MasterClassFrame, 0)
-};
-
-void MasterClassFrame::Start()
-{
-    
-     alice_vsd(fDataset->GetSelected());
-/*  #if defined(__CINT__)
+  MasterClassFrame()
   {
-    Info("alice_vsd.C", "Has to be run in compiled mode ... doing this for you.");
-    gSystem->CompileMacro("alice_vsd.C");
-    alice_vsd(fDataset->GetSelected());
-  }
-  #else
-    # include "alice_vsd.C"
-  # endif
-*/
-  UnmapWindow();
-}
 
+    TGVerticalFrame *hf = new TGVerticalFrame(this);
+    {
 
-
-
-
-MasterClassFrame::MasterClassFrame(const TGWindow *p, UInt_t w, UInt_t h) :
-   TGMainFrame(p, w, h)
-{
-
-   TGVerticalFrame* hf = new TGVerticalFrame(this);
-   {
-
-      TGLabel* label = new TGLabel(hf,"Data Selection");
+      TGLabel *label = new TGLabel(hf,"Data Selection");
       hf->AddFrame(label, new TGLayoutHints(kLHintsExpandX, 5, 5, 5, 5));
 
-      TGPictureButton* b1 = new TGPictureButton(hf, gClient->GetPicture("data/alice_logo.png"));
+      TGPictureButton *b1 = new TGPictureButton(hf, gClient->GetPicture("data/alice_logo.png"));
       hf->AddFrame(b1, new TGLayoutHints(kLHintsExpandX, 5, 5, 5, 5));
 
       fStudent = new TGTextButton(hf,"Start Analysis");
       hf->AddFrame(fStudent, new TGLayoutHints(kLHintsExpandX, 5, 5, 5, 5));
       fStudent->Connect("Clicked()", "MasterClassFrame", this, "Start()");
-      
-      
+
+
       fDataset = new TGComboBox(hf);
       fDataset->AddEntry("p-p collision", 1);
       fDataset->AddEntry("p-Pb collision", 2);
@@ -1839,39 +1789,59 @@ MasterClassFrame::MasterClassFrame(const TGWindow *p, UInt_t w, UInt_t h) :
       hf->AddFrame(fExit, new TGLayoutHints(kLHintsExpandX, 5, 5, 10, 10));
       fExit->Connect("Clicked()", "TApplication", gApplication, "Terminate()");
 
-   }
+    }
 
-   AddFrame(hf);
+    AddFrame(hf);
 
-   SetWindowName("J/psi Masterclass");
-   MapSubwindows();
+    SetWindowName("J/psi Masterclass");
+    MapSubwindows();
 
-   Resize(GetDefaultSize());
+    Resize(GetDefaultSize());
 
-   MapWindow();
+    MapWindow();
 
-}
+  }
 
-MasterClassFrame::~MasterClassFrame()
-{
-   Cleanup();
-}
+  void Start()
+  {
+
+    alice_vsd(fDataset->GetSelected());
+    UnmapWindow();
+  }
+
+  ~MasterClassFrame()
+  {
+    Cleanup();
+  }
+
+  ClassDef(MasterClassFrame, 0)
+};
+
+
+
+
+
 
 void masterclass()
 {
-   new MasterClassFrame(gClient->GetRoot(), 800, 600);
-   TRootHelpDialog* instructions = new TRootHelpDialog(gClient->GetRoot(), "MASTERCLASS MENU INSTRUCTIONS", 700, 250);
-   instructions->SetText("\
+   #if defined(__CINT__) && !defined(__MAKECINT__)
+   {
+    printf("masterclass has to be run in compiled mode! Please run root masterclass.C+");
+ //     gSystem->CompileMacro("masterclass.C");
+ //     masterclass(fChoice, fMode, fDataset->GetSelected());
+    exit();
+  }
+   #else
+  
+  
+  new MasterClassFrame();
+  TRootHelpDialog *instructions = new TRootHelpDialog(gClient->GetRoot(), "Masterclass Instructions", 700, 250);
+  instructions->SetText("\
 Welcome to ALICE J/psi Masterclass!\n\n\
 \
    You see the window \"Data Selection\". In this window you can select the dataset which you want\n\
    to analyse, either proton-proton collision data or proton-lead collision data. \n\
 ");
-   instructions->Popup();
+  instructions->Popup();
+   #endif
 }
-
-
-
-
-
-
