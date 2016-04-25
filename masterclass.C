@@ -86,7 +86,7 @@ public:
     TGGroupFrame *gf = new TGGroupFrame(this, "ALICE Detector");
 
     TGHorizontalFrame *hf = new TGHorizontalFrame(gf, 250, 250);
-    b1 = new TGPictureButton(hf, gClient->GetPicture("eve_files/dEdx.png"));
+    b1 = new TGPictureButton(hf, gClient->GetPicture("data/dEdx.png"));
 
     hf->AddFrame(b1, new TGLayoutHints(kLHintsExpandX, 1, 1, 1, 1));
     gf->AddFrame(hf);
@@ -1711,7 +1711,7 @@ void alice_vsd( Int_t dataset) {
 
   TString vsd_file_name;
 
-  vsd_file_name = Form("eve_files/data/events_%i.root",dataset);
+  vsd_file_name = Form("data/events/events_%i.root",dataset);
   cout << vsd_file_name.Data() << endl;
 
   // Main function, initializes the application.
@@ -1819,7 +1819,7 @@ MasterClassFrame::MasterClassFrame(const TGWindow *p, UInt_t w, UInt_t h) :
       TGLabel* label = new TGLabel(hf,"Data Selection");
       hf->AddFrame(label, new TGLayoutHints(kLHintsExpandX, 5, 5, 5, 5));
 
-      TGPictureButton* b1 = new TGPictureButton(hf, gClient->GetPicture("eve_files/alice_logo.png"));
+      TGPictureButton* b1 = new TGPictureButton(hf, gClient->GetPicture("data/alice_logo.png"));
       hf->AddFrame(b1, new TGLayoutHints(kLHintsExpandX, 5, 5, 5, 5));
 
       fStudent = new TGTextButton(hf,"Start Analysis");
