@@ -1,3 +1,7 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
 #include <TApplication.h>
 #include <TGClient.h>
 #include <TGButton.h>
@@ -6,28 +10,21 @@
 #include <TList.h>
 #include <TGLabel.h>
 #include <TRootHelpDialog.h>
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <sstream>
 #include <TGFileDialog.h>
-#include <TRootHelpDialog.h>
-#include "TImage.h"
-#include "TRecorder.h"
-#include <TGClient.h>
+#include <TImage.h>
+#include <TRecorder.h>
 #include <TGFrame.h>
 #include <TGLayout.h>
 #include <TGSplitter.h>
-#include <TGComboBox.h>
 #include <TGTextView.h>
 #include <TGPicture.h>
 #include <TG3DLine.h>
 #include <TAxis3D.h>
 #include <TStyle.h>
 #include <TPaveText.h>
-#include <TApplication.h>
 #include <TEveManager.h>
 #include <TEveEventManager.h>
+#include <TEveElement.h>
 #include <TEveWindowManager.h>
 #include <TEveVSD.h>
 #include <TEveVSDStructs.h>
@@ -36,6 +33,7 @@
 #include <TEveTrackPropagator.h>
 #include <TEveGeoShape.h>
 #include <TEveSelection.h>
+#include <TEveBrowser.h>
 #include <TCanvas.h>
 #include <TParticlePDG.h>
 #include <TH1F.h>
@@ -44,18 +42,291 @@
 #include <TGraph.h>
 #include <TLine.h>
 #include <TGTextEntry.h>
-#include <TGLabel.h>
 #include <TGTab.h>
-#include <TGButton.h>
 #include <TTimer.h>
 #include <TFile.h>
 #include <TKey.h>
 #include <TSystem.h>
 #include <TPRegexp.h>
 #include <TGNumberEntry.h>
-#include "MultiView.C"
+#include <TEveViewer.h>
+#include <TGLViewer.h>
+#include <TEveScene.h>
+#include <TEveProjectionManager.h>
+#include <TEveProjectionAxes.h>
+#include <TEveProjectionAxesGL.h>
+#include <TEveWindow.h>
+
 
 using namespace std;
+
+
+
+// MultiView
+//
+// Structure encapsulating standard views: 3D, r-phi and rho-z.
+// Includes scenes and projection managers.
+//
+// Should be used in compiled mode.
+
+struct MultiView
+{
+//   TEveProjectionManager *f3DMgr;
+   TEveProjectionManager *fRPhiMgr;
+   TEveProjectionManager *fRhoZMgr;
+
+   TEveViewer            *f3DView;
+   TEveViewer            *fRPhiView;
+   TEveViewer            *fRhoZView;
+
+//   TEveScene             *f3DGeomScene;
+
+   TEveScene             *fRPhiGeomScene;
+   TEveScene             *fRhoZGeomScene;
+   TEveScene             *fRPhiEventScene;
+   TEveScene             *fRhoZEventScene;
+
+   TEveGeoShape          *fGeomGentle;     // Obvious meaning.
+   TEveGeoShape          *fGeomGentleRPhi; // Obvious meaning.
+   TEveGeoShape          *fGeomGentleRhoZ; // Obvious meaning.
+
+
+   //---------------------------------------------------------------------------
+
+   MultiView()
+   {
+      // Constructor --- creates required scenes, projection managers
+      // and GL viewers.
+
+      // Scenes
+      //========
+
+
+//      f3DGeomScene = (dynamic_cast<TEveScene*>(gEve->GetScenes()->FirstChild()));
+
+      fRPhiGeomScene  = gEve->SpawnNewScene("RPhi Geometry",
+                                            "Scene holding projected geometry for the RPhi view.");
+      fRhoZGeomScene  = gEve->SpawnNewScene("RhoZ Geometry",
+                                            "Scene holding projected geometry for the RhoZ view.");
+      fRPhiEventScene = gEve->SpawnNewScene("RPhi Event Data",
+                                            "Scene holding projected event-data for the RPhi view.");
+      fRhoZEventScene = gEve->SpawnNewScene("RhoZ Event Data",
+                                            "Scene holding projected event-data for the RhoZ view.");
+
+
+      // Projection managers
+      //=====================
+/*
+      f3DMgr = new TEveProjectionManager(TEve3DProjection::kPT_3D);
+      gEve->AddToListTree(f3DMgr, kFALSE);
+      {
+         TEveProjectionAxesGL* a = new TEveProjectionAxesGL(f3DMgr);
+//         a->SetMainColor(kWhite);
+//         a->SetTitle("3D");
+//         a->SetTitleSize(0.05);
+//         a->SetTitleFont(102);
+//         a->SetLabelSize(0.025);
+//         a->SetLabelFont(102);
+         f3DGeomScene->AddElement(a);
+      }
+
+//   TAxis3D* axis = new TAxis3D();
+ //  axis->Paint();
+*/
+      fRPhiMgr = new TEveProjectionManager(TEveProjection::kPT_RPhi);
+      gEve->AddToListTree(fRPhiMgr, kFALSE);
+      {
+         TEveProjectionAxes* a = new TEveProjectionAxes(fRPhiMgr);
+         a->SetMainColor(kWhite);
+         a->SetTitle("R-Phi");
+         a->SetTitleSize(0.05);
+         a->SetTitleFont(102);
+         a->SetLabelSize(0.025);
+         a->SetLabelFont(102);
+         fRPhiGeomScene->AddElement(a);
+      }
+
+      fRhoZMgr = new TEveProjectionManager(TEveProjection::kPT_RhoZ);
+      gEve->AddToListTree(fRhoZMgr, kFALSE);
+      {
+         TEveProjectionAxes* a = new TEveProjectionAxes(fRhoZMgr);
+         a->SetMainColor(kWhite);
+         a->SetTitle("Rho-Z");
+         a->SetTitleSize(0.05);
+         a->SetTitleFont(102);
+         a->SetLabelSize(0.025);
+         a->SetLabelFont(102);
+         fRhoZGeomScene->AddElement(a);
+      }
+
+
+      // Viewers
+      //=========
+
+      TEveWindowSlot *slot = 0;
+      TEveWindowPack *pack = 0;
+
+      slot = TEveWindow::CreateWindowInTab(gEve->GetBrowser()->GetTabRight());
+      pack = slot->MakePack();
+      pack->SetElementName("Multi View");
+      pack->SetHorizontal();
+      pack->SetShowTitleBar(kFALSE);
+      pack->NewSlot()->MakeCurrent();
+      f3DView = gEve->SpawnNewViewer("3D View", "");
+
+//      gEve->GetGlobalScene()->AddElement(axis);
+      f3DView->AddScene(gEve->GetGlobalScene());
+///      f3DView->AddScene(f3DGeomScene);
+      f3DView->AddScene(gEve->GetEventScene());
+//      f3DView->GetGLViewer()->SetPointScale(0);
+//      f3DView->AddElement(axis);
+
+      pack = pack->NewSlot()->MakePack();
+      pack->SetShowTitleBar(kFALSE);
+      pack->NewSlot()->MakeCurrent();
+      fRPhiView = gEve->SpawnNewViewer("RPhi View", "");
+      fRPhiView->GetGLViewer()->SetCurrentCamera(TGLViewer::kCameraOrthoXOY);
+      fRPhiView->AddScene(fRPhiGeomScene);
+      fRPhiView->AddScene(fRPhiEventScene);
+
+      pack->NewSlot()->MakeCurrent();
+      fRhoZView = gEve->SpawnNewViewer("RhoZ View", "");
+      fRhoZView->GetGLViewer()->SetCurrentCamera(TGLViewer::kCameraOrthoXOY);
+      fRhoZView->AddScene(fRhoZGeomScene);
+      fRhoZView->AddScene(fRhoZEventScene);
+   }
+
+   //---------------------------------------------------------------------------
+
+   void SetDepth(Float_t d)
+   {
+      // Set current depth on all projection managers.
+
+      fRPhiMgr->SetCurrentDepth(d);
+      fRhoZMgr->SetCurrentDepth(d);
+   }
+
+   //---------------------------------------------------------------------------
+
+   void InitGeomGentle(TEveGeoShape* g3d, TEveGeoShape* grphi, TEveGeoShape* grhoz)
+   {
+     // Initialize gentle geometry.
+
+      fGeomGentle     = g3d;
+      fGeomGentleRPhi = grphi; fGeomGentleRPhi->IncDenyDestroy();
+      fGeomGentleRhoZ = grhoz; fGeomGentleRhoZ->IncDenyDestroy();
+
+      ImportGeomRPhi(fGeomGentleRPhi);
+      ImportGeomRhoZ(fGeomGentleRhoZ);
+
+   }
+
+   void ImportGeomRPhi(TEveElement* el)
+   { 
+      fRPhiMgr->ImportElements(el, fRPhiGeomScene);
+   }
+
+   void ImportGeomRhoZ(TEveElement* el)
+   { 
+      fRhoZMgr->ImportElements(el, fRhoZGeomScene);
+   }
+
+   void ImportEventRPhi(TEveElement* el)
+   { 
+      fRPhiMgr->ImportElements(el, fRPhiEventScene);
+   }
+
+   void ImportEventRhoZ(TEveElement* el)
+   { 
+      fRhoZMgr->ImportElements(el, fRhoZEventScene);
+   }
+
+   //---------------------------------------------------------------------------
+
+   void DestroyEventRPhi()
+   {
+      fRPhiEventScene->DestroyElements();
+   }
+
+   void DestroyEventRhoZ()
+   {
+      fRhoZEventScene->DestroyElements();
+   }
+
+   void DestroyGeomRPhi()
+   {
+      fRPhiGeomScene->DestroyElements();
+   }
+
+   void DestroyGeomRhoZ()
+   {
+      fRhoZGeomScene->DestroyElements();
+   }
+
+   void DestroyAllGeometries()
+   {
+      // Destroy 3d, r-phi and rho-z geometries.
+
+      fGeomGentle->DestroyElements();
+      fGeomGentleRPhi->DestroyElements();
+      fGeomGentleRhoZ->DestroyElements();
+
+   }
+
+   void SetRPhiAxes()
+   {
+      gEve->AddToListTree(fRPhiMgr, kFALSE);
+      {
+         TEveProjectionAxes* a = new TEveProjectionAxes(fRPhiMgr);
+         a->SetMainColor(kWhite);
+         a->SetTitle("R-Phi");
+         a->SetTitleSize(0.05);
+         a->SetTitleFont(102);
+         a->SetLabelSize(0.025);
+         a->SetLabelFont(102);
+         fRPhiGeomScene->AddElement(a);
+      }
+   }
+
+   void SetRhoZAxes()
+   {
+      gEve->AddToListTree(fRhoZMgr, kFALSE);
+      {
+         TEveProjectionAxes* a = new TEveProjectionAxes(fRhoZMgr);
+         a->SetMainColor(kWhite);
+         a->SetTitle("Rho-Z");
+         a->SetTitleSize(0.05);
+         a->SetTitleFont(102);
+         a->SetLabelSize(0.025);
+         a->SetLabelFont(102);
+         fRhoZGeomScene->AddElement(a);
+      }
+   }
+
+   TEveViewer* Get3DView()
+   {
+      return f3DView;
+   }
+
+   TEveViewer* GetRPhiView()
+   {
+      return fRPhiView;
+   }
+
+   TEveScene* GetRPhiEventScene()
+   {
+      return fRPhiEventScene;
+   }
+
+   TEveScene* GetRhoZEventScene()
+   {
+      return fRhoZEventScene;
+   }
+
+};
+
+
+
 
 
 class TVSDReader;
@@ -105,7 +376,7 @@ public:
     MapWindow();
   }
 
-  ClassDef(AliceDetectorInfo, 0);
+   ClassDef(AliceDetectorInfo, 0);
 };
 
 
@@ -129,8 +400,12 @@ public:
   TGLabel *val1;
 
   Float_t p1,p2,de1,de2;
-  AliceSelector(TVSDReader *parent, Float_t currentP1, Float_t currentP2, Float_t currentDe1, Float_t currentDe2) : 
-  p1(currentP1), p2(currentP2), de1(currentDe1), de2(currentDe2){
+  AliceSelector(TVSDReader *parent, Float_t currentP1, Float_t currentP2, Float_t currentDe1, Float_t currentDe2):
+  p1(currentP1), 
+  p2(currentP2), 
+  de1(currentDe1), 
+  de2(currentDe2)
+  {
     TGGroupFrame *gf = new TGGroupFrame(this, "");
 
 
@@ -261,7 +536,9 @@ public:
   Float_t p1,p2,de1,de2;
 
   AliceExtractor(TVSDReader *parent, Float_t minm, Float_t maxm) :
-    l5(0), l6(0){
+    l5(0),
+    l6(0)
+    {
     TGGroupFrame  *gf = new TGGroupFrame(this,"");
 
     const TGFont *font = gClient->GetFont("-*-times-bold-r-*-*-16-*-*-*-*-*-*-*");
@@ -436,7 +713,6 @@ public:
   Int_t nEvents;
   TCanvas *pad2;
   TCanvas *pad;
-  Float_t p1,p2,de1,de2;
   AliceDetectorInfo *gAliceDetectorInfo;
   AliceSelector *gAliceSelector;
   AliceExtractor *gAliceExtractor;
@@ -452,6 +728,7 @@ public:
   TLine *l4;
   TLine *l5;
   TLine *l6;
+  Float_t p1,p2,de1,de2;
 
 
 
@@ -495,7 +772,11 @@ public:
     l3(0x0),
     l4(0x0),
     l5(0x0),
-    l6(0x0)
+    l6(0x0),
+    p1(0.),
+    p2(0.),
+    de1(0.),
+    de2(0.)
   {
 
     fFile = TFile::Open(file_name);
@@ -1814,26 +2095,19 @@ public:
     Cleanup();
   }
 
-  ClassDef(MasterClassFrame, 0)
+   ClassDef(MasterClassFrame, 0);
 };
-
-
-
 
 
 
 void masterclass()
 {
-   #if defined(__CINT__) && !defined(__MAKECINT__)
-   {
-    printf("masterclass has to be run in compiled mode! Please run root masterclass.C+");
- //     gSystem->CompileMacro("masterclass.C");
- //     masterclass(fChoice, fMode, fDataset->GetSelected());
-    exit();
-  }
-   #else
-  
-  
+// #if defined(__CINT__) && !defined(__MAKECINT__)
+//    {
+//     printf("masterclass has to be run in compiled mode! Please run root masterclass.C+");
+//     exit();
+//   }
+// #else
   new MasterClassFrame();
   TRootHelpDialog *instructions = new TRootHelpDialog(gClient->GetRoot(), "Masterclass Instructions", 700, 250);
   instructions->SetText("\
@@ -1843,5 +2117,14 @@ Welcome to ALICE J/psi Masterclass!\n\n\
    to analyse, either proton-proton collision data or proton-lead collision data. \n\
 ");
   instructions->Popup();
-   #endif
+// #endif
 }
+
+
+#ifndef __CINT__
+int main() {
+  masterclass();
+  return 0;
+}
+#endif
+
