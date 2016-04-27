@@ -2102,12 +2102,12 @@ public:
 
 void masterclass()
 {
-// #if defined(__CINT__) && !defined(__MAKECINT__)
-//    {
-//     printf("masterclass has to be run in compiled mode! Please run root masterclass.C+");
-//     exit();
-//   }
-// #else
+#if defined(__CINT__) && !defined(__MAKECINT__)
+    {
+     printf("masterclass has to be run in compiled mode! Please run root masterclass.C+");
+     exit();
+   }
+#else
   new MasterClassFrame();
   TRootHelpDialog *instructions = new TRootHelpDialog(gClient->GetRoot(), "Masterclass Instructions", 700, 250);
   instructions->SetText("\
@@ -2117,14 +2117,7 @@ Welcome to ALICE J/psi Masterclass!\n\n\
    to analyse, either proton-proton collision data or proton-lead collision data. \n\
 ");
   instructions->Popup();
-// #endif
-}
-
-
-#ifndef __CINT__
-int main() {
-  masterclass();
-  return 0;
-}
 #endif
+}
+
 
