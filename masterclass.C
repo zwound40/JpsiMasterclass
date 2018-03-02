@@ -981,7 +981,7 @@ public:
       significance = numJpsi / ( TMath::Sqrt(numJpsi + bg) );
     }
     if(bg > 0.0) {
-      sb = numJpsi / bg;
+      sb = 1.*numJpsi / bg;
     }
     else if( numJpsi > 0.0 ) {
       sb =  9999.;
